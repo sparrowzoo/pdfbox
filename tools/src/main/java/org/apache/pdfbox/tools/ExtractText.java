@@ -50,8 +50,7 @@ import org.apache.pdfbox.util.Matrix;
  * @author Ben Litchfield
  * @author Tilman Hausherr
  */
-public final class ExtractText
-{
+public final class ExtractText {
     private static final Log LOG = LogFactory.getLog(ExtractText.class);
 
     private static final String PASSWORD = "-password";
@@ -74,9 +73,8 @@ public final class ExtractText
 
     /**
      * private constructor.
-    */
-    private ExtractText()
-    {
+     */
+    private ExtractText() {
         //static class
     }
 
@@ -84,25 +82,25 @@ public final class ExtractText
      * Infamous main method.
      *
      * @param args Command line arguments, should be one and a reference to a file.
-     *
      * @throws IOException if there is an error reading the document or extracting the text.
      */
-    public static void main( String[] args ) throws IOException
-    {
+    public static void main(String[] args) throws IOException {
+        args = new String[]{"/Users/harry/install-workspace/简历/模板/jianzhuyingcai.pdf",
+                "-console"};
         // suppress the Dock icon on OS X
         System.setProperty("apple.awt.UIElement", "true");
 
         ExtractText extractor = new ExtractText();
         extractor.startExtraction(args);
     }
+
     /**
      * Starts the text extraction.
-     *  
+     *
      * @param args the commandline arguments.
      * @throws IOException if there is an error reading the document or extracting the text.
      */
-    public void startExtraction( String[] args ) throws IOException
-    {
+    public void startExtraction(String[] args) throws IOException {
         boolean toConsole = false;
         boolean toHTML = false;
         boolean sort = false;
@@ -117,134 +115,91 @@ public final class ExtractText
         String ext = ".txt";
         int startPage = 1;
         int endPage = Integer.MAX_VALUE;
-        for( int i=0; i<args.length; i++ )
-        {
-            if( args[i].equals( PASSWORD ) )
-            {
+        for (int i = 0; i < args.length; i++) {
+            if (args[i].equals(PASSWORD)) {
                 i++;
-                if( i >= args.length )
-                {
+                if (i >= args.length) {
                     usage();
                 }
                 password = args[i];
-            }
-            else if( args[i].equals( ENCODING ) )
-            {
+            } else if (args[i].equals(ENCODING)) {
                 i++;
-                if( i >= args.length )
-                {
+                if (i >= args.length) {
                     usage();
                 }
                 encoding = args[i];
-            }
-            else if( args[i].equals( START_PAGE ) )
-            {
+            } else if (args[i].equals(START_PAGE)) {
                 i++;
-                if( i >= args.length )
-                {
+                if (i >= args.length) {
                     usage();
                 }
-                startPage = Integer.parseInt( args[i] );
-            }
-            else if( args[i].equals( HTML ) )
-            {
+                startPage = Integer.parseInt(args[i]);
+            } else if (args[i].equals(HTML)) {
                 toHTML = true;
                 ext = ".html";
-            }
-            else if( args[i].equals( SORT ) )
-            {
+            } else if (args[i].equals(SORT)) {
                 sort = true;
-            }
-            else if( args[i].equals( IGNORE_BEADS ) )
-            {
+            } else if (args[i].equals(IGNORE_BEADS)) {
                 separateBeads = false;
-            }
-            else if( args[i].equals( DEBUG ) )
-            {
+            } else if (args[i].equals(DEBUG)) {
                 debug = true;
-            }
-            else if (args[i].equals(ALWAYSNEXT))
-            {
+            } else if (args[i].equals(ALWAYSNEXT)) {
                 alwaysNext = true;
-            }
-            else if (args[i].equals(ROTATION_MAGIC))
-            {
+            } else if (args[i].equals(ROTATION_MAGIC)) {
                 rotationMagic = true;
-            }
-            else if( args[i].equals( END_PAGE ) )
-            {
+            } else if (args[i].equals(END_PAGE)) {
                 i++;
-                if( i >= args.length )
-                {
+                if (i >= args.length) {
                     usage();
                 }
-                endPage = Integer.parseInt( args[i] );
-            }
-            else if( args[i].equals( CONSOLE ) )
-            {
+                endPage = Integer.parseInt(args[i]);
+            } else if (args[i].equals(CONSOLE)) {
                 toConsole = true;
-            }
-            else
-            {
-                if( pdfFile == null )
-                {
+            } else {
+                if (pdfFile == null) {
                     pdfFile = args[i];
-                }
-                else
-                {
+                } else {
                     outputFile = args[i];
                 }
             }
         }
 
-        if( pdfFile == null )
-        {
+        if (pdfFile == null) {
             usage();
-        }
-        else
-        {
+        } else {
 
             Writer output = null;
             PDDocument document = null;
-            try
-            {
-                long startTime = startProcessing("Loading PDF "+pdfFile);
-                if( outputFile == null && pdfFile.length() >4 )
-                {
-                    outputFile = new File( pdfFile.substring( 0, pdfFile.length() -4 ) + ext ).getAbsolutePath();
+            try {
+                long startTime = startProcessing("Loading PDF " + pdfFile);
+                if (outputFile == null && pdfFile.length() > 4) {
+                    outputFile = new File(pdfFile.substring(0, pdfFile.length() - 4) + ext).getAbsolutePath();
                 }
-                document = PDDocument.load(new File( pdfFile ), password);
-                
+                document = PDDocument.load(new File(pdfFile), password);
+
                 AccessPermission ap = document.getCurrentAccessPermission();
-                if( ! ap.canExtractContent() )
-                {
-                    throw new IOException( "You do not have permission to extract text" );
+                if (!ap.canExtractContent()) {
+                    throw new IOException("You do not have permission to extract text");
                 }
-                
+
                 stopProcessing("Time for loading: ", startTime);
 
-                if( toConsole )
-                {
-                    output = new OutputStreamWriter( System.out, encoding );
-                }
-                else
-                {
-                    if (toHTML && !STD_ENCODING.equals(encoding))
-                    {
+                if (toConsole) {
+                    output = new OutputStreamWriter(System.out, encoding);
+                } else {
+                    if (toHTML && !STD_ENCODING.equals(encoding)) {
                         encoding = STD_ENCODING;
                         System.out.println("The encoding parameter is ignored when writing html output.");
                     }
-                    output = new OutputStreamWriter( new FileOutputStream( outputFile ), encoding );
+                    output = new OutputStreamWriter(new FileOutputStream(outputFile), encoding);
                 }
                 startTime = startProcessing("Starting text extraction");
-                if (debug)
-                {
+                if (debug) {
                     System.err.println("Writing to " + outputFile);
                 }
 
                 PDFTextStripper stripper;
-                if(toHTML)
-                {
+                if (toHTML) {
                     // HTML stripper can't work page by page because of startDocument() callback
                     stripper = new PDFText2HTML();
                     stripper.setSortByPosition(sort);
@@ -254,73 +209,55 @@ public final class ExtractText
 
                     // Extract text for main document:
                     stripper.writeText(document, output);
-                }
-                else
-                {
-                    if (rotationMagic)
-                    {
+                } else {
+                    if (rotationMagic) {
                         stripper = new FilteredTextStripper();
-                    }
-                    else
-                    {
+                    } else {
                         stripper = new PDFTextStripper();
                     }
                     stripper.setSortByPosition(sort);
                     stripper.setShouldSeparateByBeads(separateBeads);
 
                     // Extract text for main document:
-                    extractPages(startPage, Math.min(endPage, document.getNumberOfPages()), 
-                                 stripper, document, output, rotationMagic, alwaysNext);
+                    extractPages(startPage, Math.min(endPage, document.getNumberOfPages()),
+                            stripper, document, output, rotationMagic, alwaysNext);
                 }
 
                 // ... also for any embedded PDFs:
                 PDDocumentCatalog catalog = document.getDocumentCatalog();
-                PDDocumentNameDictionary names = catalog.getNames();    
-                if (names != null)
-                {
+                PDDocumentNameDictionary names = catalog.getNames();
+                if (names != null) {
                     PDEmbeddedFilesNameTreeNode embeddedFiles = names.getEmbeddedFiles();
-                    if (embeddedFiles != null)
-                    {
+                    if (embeddedFiles != null) {
                         Map<String, PDComplexFileSpecification> embeddedFileNames = embeddedFiles.getNames();
-                        if (embeddedFileNames != null)
-                        {
-                            for (Map.Entry<String, PDComplexFileSpecification> ent : embeddedFileNames.entrySet()) 
-                            {
-                                if (debug)
-                                {
+                        if (embeddedFileNames != null) {
+                            for (Map.Entry<String, PDComplexFileSpecification> ent : embeddedFileNames.entrySet()) {
+                                if (debug) {
                                     System.err.println("Processing embedded file " + ent.getKey() + ":");
                                 }
                                 PDComplexFileSpecification spec = ent.getValue();
                                 PDEmbeddedFile file = spec.getEmbeddedFile();
-                                if (file != null && "application/pdf".equals(file.getSubtype()))
-                                {
-                                    if (debug)
-                                    {
+                                if (file != null && "application/pdf".equals(file.getSubtype())) {
+                                    if (debug) {
                                         System.err.println("  is PDF (size=" + file.getSize() + ")");
                                     }
                                     try (InputStream fis = file.createInputStream();
-                                        PDDocument subDoc = PDDocument.load(fis))
-                                    {
-                                        if (toHTML)
-                                        {
+                                         PDDocument subDoc = PDDocument.load(fis)) {
+                                        if (toHTML) {
                                             // will not really work because of HTML header + footer
-                                            stripper.writeText( subDoc, output );
-                                        }
-                                        else
-                                        {
+                                            stripper.writeText(subDoc, output);
+                                        } else {
                                             extractPages(1, subDoc.getNumberOfPages(),
-                                                         stripper, subDoc, output, rotationMagic, alwaysNext);
+                                                    stripper, subDoc, output, rotationMagic, alwaysNext);
                                         }
-                                    } 
+                                    }
                                 }
-                            } 
+                            }
                         }
                     }
                 }
                 stopProcessing("Time for extraction: ", startTime);
-            }
-            finally
-            {
+            } finally {
                 IOUtils.closeQuietly(output);
                 IOUtils.closeQuietly(document);
             }
@@ -328,17 +265,13 @@ public final class ExtractText
     }
 
     private void extractPages(int startPage, int endPage,
-            PDFTextStripper stripper, PDDocument document, Writer output,
-            boolean rotationMagic, boolean alwaysNext) throws IOException
-    {
-        for (int p = startPage; p <= endPage; ++p)
-        {
+                              PDFTextStripper stripper, PDDocument document, Writer output,
+                              boolean rotationMagic, boolean alwaysNext) throws IOException {
+        for (int p = startPage; p <= endPage; ++p) {
             stripper.setStartPage(p);
             stripper.setEndPage(p);
-            try
-            {
-                if (rotationMagic)
-                {
+            try {
+                if (rotationMagic) {
                     PDPage page = document.getPage(p - 1);
                     int rotation = page.getRotation();
                     page.setRotation(0);
@@ -347,13 +280,11 @@ public final class ExtractText
                     angleCollector.setEndPage(p);
                     angleCollector.writeText(document, new NullWriter());
                     // rotation magic
-                    for (int angle : angleCollector.getAngles())
-                    {
+                    for (int angle : angleCollector.getAngles()) {
                         // prepend a transformation
                         // (we could skip these parts for angle 0, but it doesn't matter much)
-                        try (PDPageContentStream cs = new PDPageContentStream(document, page, 
-                                PDPageContentStream.AppendMode.PREPEND, false))
-                        {
+                        try (PDPageContentStream cs = new PDPageContentStream(document, page,
+                                PDPageContentStream.AppendMode.PREPEND, false)) {
                             cs.transform(Matrix.getRotateInstance(-Math.toRadians(angle), 0, 0));
                         }
 
@@ -363,16 +294,11 @@ public final class ExtractText
                         ((COSArray) page.getCOSObject().getItem(COSName.CONTENTS)).remove(0);
                     }
                     page.setRotation(rotation);
-                }
-                else
-                {
+                } else {
                     stripper.writeText(document, output);
                 }
-            }
-            catch (IOException ex)
-            {
-                if (!alwaysNext)
-                {
+            } catch (IOException ex) {
+                if (!alwaysNext) {
                     throw ex;
                 }
                 LOG.error("Failed to process page " + p, ex);
@@ -380,21 +306,18 @@ public final class ExtractText
         }
     }
 
-    private long startProcessing(String message) 
-    {
-        if (debug) 
-        {
+    private long startProcessing(String message) {
+        if (debug) {
             System.err.println(message);
         }
         return System.currentTimeMillis();
     }
-    
-    private void stopProcessing(String message, long startTime) 
-    {
-        if (debug)
-        {
+
+    private void stopProcessing(String message, long startTime) {
+        if (debug) {
+            System.out.println(message);
             long stopTime = System.currentTimeMillis();
-            float elapsedTime = ((float)(stopTime - startTime))/1000;
+            float elapsedTime = ((float) (stopTime - startTime)) / 1000;
             System.err.println(message + elapsedTime + " seconds");
         }
     }
@@ -402,31 +325,30 @@ public final class ExtractText
     /**
      * This will print the usage requirements and exit.
      */
-    private static void usage()
-    {
+    private static void usage() {
         String message = "Usage: java -jar pdfbox-app-x.y.z.jar ExtractText [options] <inputfile> [output-text-file]\n"
-            + "\nOptions:\n"
-            + "  -password <password>        : Password to decrypt document\n"
-            + "  -encoding <output encoding> : UTF-8 (default) or ISO-8859-1, UTF-16BE,\n"
-            + "                                UTF-16LE, etc.\n"
-            + "  -console                    : Send text to console instead of file\n"
-            + "  -html                       : Output in HTML format instead of raw text\n"
-            + "  -sort                       : Sort the text before writing\n"
-            + "  -ignoreBeads                : Disables the separation by beads\n"
-            + "  -debug                      : Enables debug output about the time consumption\n"
-            + "                                of every stage\n"
-            + "  -alwaysNext                 : Process next page (if applicable) despite\n"
-            + "                                IOException (ignored when -html)\n"
-            + "  -rotationMagic              : Analyze each page for rotated/skewed text,\n"
-            + "                                rotate to 0° and extract separately\n"
-            + "                                (slower, and ignored when -html)\n"
-            + "  -startPage <number>         : The first page to start extraction (1 based)\n"
-            + "  -endPage <number>           : The last page to extract (1 based, inclusive)\n"
-            + "  <inputfile>                 : The PDF document to use\n"
-            + "  [output-text-file]          : The file to write the text to";
-        
+                + "\nOptions:\n"
+                + "  -password <password>        : Password to decrypt document\n"
+                + "  -encoding <output encoding> : UTF-8 (default) or ISO-8859-1, UTF-16BE,\n"
+                + "                                UTF-16LE, etc.\n"
+                + "  -console                    : Send text to console instead of file\n"
+                + "  -html                       : Output in HTML format instead of raw text\n"
+                + "  -sort                       : Sort the text before writing\n"
+                + "  -ignoreBeads                : Disables the separation by beads\n"
+                + "  -debug                      : Enables debug output about the time consumption\n"
+                + "                                of every stage\n"
+                + "  -alwaysNext                 : Process next page (if applicable) despite\n"
+                + "                                IOException (ignored when -html)\n"
+                + "  -rotationMagic              : Analyze each page for rotated/skewed text,\n"
+                + "                                rotate to 0° and extract separately\n"
+                + "                                (slower, and ignored when -html)\n"
+                + "  -startPage <number>         : The first page to start extraction (1 based)\n"
+                + "  -endPage <number>           : The last page to extract (1 based, inclusive)\n"
+                + "  <inputfile>                 : The PDF document to use\n"
+                + "  [output-text-file]          : The file to write the text to";
+
         System.err.println(message);
-        System.exit( 1 );
+        System.exit(1);
     }
 }
 
@@ -436,22 +358,18 @@ public final class ExtractText
  * angled glyphs being treated separately). This class must be constructed for each page so that the
  * angle set is initialized.
  */
-class AngleCollector extends PDFTextStripper
-{
+class AngleCollector extends PDFTextStripper {
     private final Set<Integer> angles = new TreeSet<>();
 
-    AngleCollector() throws IOException
-    {
+    AngleCollector() throws IOException {
     }
 
-    Set<Integer> getAngles()
-    {
+    Set<Integer> getAngles() {
         return angles;
     }
 
     @Override
-    protected void processTextPosition(TextPosition text)
-    {
+    protected void processTextPosition(TextPosition text) {
         Matrix m = text.getTextMatrix();
         m.concatenate(text.getFont().getFontMatrix());
         int angle = (int) Math.round(Math.toDegrees(Math.atan2(m.getShearY(), m.getScaleY())));
@@ -463,20 +381,16 @@ class AngleCollector extends PDFTextStripper
 /**
  * TextStripper that only processes glyphs that have angle 0.
  */
-class FilteredTextStripper extends PDFTextStripper
-{
-    FilteredTextStripper() throws IOException
-    {
+class FilteredTextStripper extends PDFTextStripper {
+    FilteredTextStripper() throws IOException {
     }
 
     @Override
-    protected void processTextPosition(TextPosition text)
-    {
+    protected void processTextPosition(TextPosition text) {
         Matrix m = text.getTextMatrix();
         m.concatenate(text.getFont().getFontMatrix());
         int angle = (int) Math.round(Math.toDegrees(Math.atan2(m.getShearY(), m.getScaleY())));
-        if (angle == 0)
-        {
+        if (angle == 0) {
             super.processTextPosition(text);
         }
     }
@@ -485,23 +399,19 @@ class FilteredTextStripper extends PDFTextStripper
 /**
  * Dummy output.
  */
-class NullWriter extends Writer
-{
+class NullWriter extends Writer {
     @Override
-    public void write(char[] cbuf, int off, int len) throws IOException
-    {
+    public void write(char[] cbuf, int off, int len) throws IOException {
         // do nothing
     }
 
     @Override
-    public void flush() throws IOException
-    {
+    public void flush() throws IOException {
         // do nothing
     }
 
     @Override
-    public void close() throws IOException
-    {
+    public void close() throws IOException {
         // do nothing
     }
 }

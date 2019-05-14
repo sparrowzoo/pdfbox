@@ -87,6 +87,17 @@ public final class ExtractImages
         System.setProperty("apple.awt.UIElement", "true");
 
         ExtractImages extractor = new ExtractImages();
+        args=new String[1];
+        //args[0]="/Users/harry/install-workspace/简历/模板/51job.pdf";
+        args[0]="/Users/harry/install-workspace/简历/模板/zhilian.pdf";
+        args[0]="/Users/harry/sparrow/open-source-integration-shell/pdfbox/tools/src/test/resources/zhilian-2.pdf";
+        //args[0]="/Users/harry/install-workspace/简历/模板/xinanrencai.pdf";
+
+        //args[0]="/Users/harry/install-workspace/简历/模板/dingxiangrencai.pdf";
+        //args[0]="/Users/harry/install-workspace/简历/模板/liepin.pdf";
+        //args[0]="/Users/harry/install-workspace/简历/模板/zhiye.pdf";
+
+
         extractor.run(args);
     }
 
